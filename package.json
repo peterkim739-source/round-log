@@ -1,0 +1,17 @@
+{
+  "name": "round-log",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A local-first MMA training journal for rounds, volume, and technique notes.",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "start": "node scripts/serve.mjs",
+    "test": "node --test",
+    "check": "node --check src/app.js && node --check src/domain.js && node --check src/storage.js && node --check scripts/serve.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT"
+}

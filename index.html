@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Round Log is a private, local-first MMA training journal. Track your rounds, weekly volume, techniques, and next-session goals."
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'self'; form-action 'none'; object-src 'none'"
+    />
+    <title>Round Log · MMA training journal</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/icon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./src/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to training dashboard</a>
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#overview" aria-label="Round Log home"
+        ><span class="brand-mark" aria-hidden="true">r<span>.</span></span
+        ><span
+          >round log<span class="brand-caption"
+            >THE TRAINING JOURNAL</span
+          ></span
+        ></a
+      >
+      <p class="nav-label">YOUR CORNER</p>
+      <nav>
+        <a href="#overview" class="nav-link"
+          ><span aria-hidden="true">◫</span> Overview</a
+        >
+        <a href="#sessions" class="nav-link"
+          ><span aria-hidden="true">≡</span> Session log</a
+        >
+        <a href="#notebook" class="nav-link"
+          ><span aria-hidden="true">◇</span> Technique notebook</a
+        >
+      </nav>
+      <div class="sidebar-note">
+        <span class="small-dot" aria-hidden="true"></span
+        ><strong>Your work. Your record.</strong>
+        <p>No account. No feed.<br />Just you, getting better.</p>
+      </div>
+      <div class="sidebar-bottom">
+        <span class="avatar" aria-hidden="true">RL</span>
+        <div>
+          <strong>Personal training log</strong
+          ><span>Saved on this browser</span>
+        </div>
+      </div>
+    </aside>
+    <main id="main">
+      <header class="topbar">
+        <span>MMA / TRAINING JOURNAL</span
+        ><span class="privacy-badge"
+          ><span class="small-dot" aria-hidden="true"></span> Local storage · no
+          account</span
+        >
+      </header>
+      <section id="overview" aria-labelledby="page-title">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">SHOW UP. PUT IN THE ROUNDS.</p>
+            <h1 id="page-title">Every round counts<span>.</span></h1>
+            <p class="lede">
+              Track the work. Remember the lesson. Come back better.
+            </p>
+          </div>
+          <button class="button primary" id="add-session">
+            <span aria-hidden="true">＋</span> Log a session
+          </button>
+        </div>
+        <div id="demo-banner" class="demo-banner" hidden>
+          <div>
+            <strong>You're exploring sample sessions.</strong
+            ><span>
+              These are fictional examples. Your personal log stays
+              separate.</span
+            >
+          </div>
+          <button class="text-button" id="exit-demo">Back to my log</button>
+        </div>
+        <div id="storage-error" class="error-banner" role="alert" hidden>
+          <p id="storage-error-text"></p>
+          <button id="download-raw" class="button small">
+            Download saved data</button
+          ><button id="reset-storage" class="button small">
+            Reset unreadable log
+          </button>
+        </div>
+        <div class="section-top">
+          <div class="section-title">
+            <h2>Your week in training</h2>
+            <span>7-DAY SNAPSHOT</span>
+          </div>
+          <div class="date-control">
+            <button id="previous-week" aria-label="Previous seven days">
+              ←</button
+            ><span id="date-range"></span
+            ><button id="next-week" aria-label="Next seven days">→</button
+            ><button class="today-button" id="current-week">Today</button>
+          </div>
+        </div>
+        <div class="metrics" id="metrics" aria-label="Training totals"></div>
+        <div class="chart-grid">
+          <section class="panel volume-panel" aria-labelledby="volume-title">
+            <div class="panel-heading">
+              <div>
+                <h3 id="volume-title">Time on the mat</h3>
+                <p>Training minutes, day by day</p>
+              </div>
+              <span class="unit-tag">MINUTES</span>
+            </div>
+            <div id="volume-chart" class="volume-chart"></div>
+            <p class="chart-caption">Consistency starts with showing up.</p>
+          </section>
+          <section class="panel discipline-panel" aria-labelledby="mix-title">
+            <div class="panel-heading">
+              <div>
+                <h3 id="mix-title">Your training mix</h3>
+                <p>A little balance. A lot of work.</p>
+              </div>
+              <span class="unit-tag">DISCIPLINE</span>
+            </div>
+            <div id="discipline-chart" class="discipline-chart"></div>
+          </section>
+        </div>
+      </section>
+      <section
+        class="journal-section"
+        id="sessions"
+        aria-labelledby="journal-title"
+      >
+        <div class="section-top journal-top">
+          <div class="section-title">
+            <h2 id="journal-title">The session log</h2>
+            <span id="session-count"></span>
+          </div>
+          <div class="data-actions">
+            <button class="button small" id="export-csv">Export CSV</button>
+            <details class="data-menu">
+              <summary>Manage data <span aria-hidden="true">⌄</span></summary>
+              <div class="data-menu-items">
+                <button id="export-json">Download JSON backup</button
+                ><button id="import-json">Import JSON backup</button
+                ><button id="try-demo">Explore sample sessions</button>
+              </div>
+            </details>
+            <input
+              type="file"
+              id="import-file"
+              accept=".json,application/json"
+              hidden
+            />
+          </div>
+        </div>
+        <div class="filter-row">
+          <label class="search-box"
+            ><span aria-hidden="true">⌕</span
+            ><span class="sr-only">Search sessions and technique notes</span
+            ><input
+              id="search"
+              type="search"
+              placeholder="Search a technique, lesson, or session…"
+              maxlength="200" /></label
+          ><label
+            ><span class="sr-only">Filter by discipline</span
+            ><select id="discipline-filter">
+              <option value="">All disciplines</option>
+            </select></label
+          ><label
+            ><span class="sr-only">Filter by date</span
+            ><select id="date-filter">
+              <option value="all">All dates</option>
+              <option value="week">Selected 7 days</option>
+            </select></label
+          >
+        </div>
+        <div id="session-list" class="session-list"></div>
+      </section>
+      <section
+        id="notebook"
+        class="notebook-section"
+        aria-labelledby="notebook-title"
+      >
+        <div class="section-top">
+          <div class="section-title">
+            <h2 id="notebook-title">Keep the lesson</h2>
+            <span>TECHNIQUE NOTEBOOK</span>
+          </div>
+          <span class="notebook-hint">Your notes, gathered in one corner.</span>
+        </div>
+        <div id="technique-notes" class="notes-grid"></div>
+      </section>
+      <footer class="footer">
+        <span
+          ><strong>round log</strong> / Built for the work between fight
+          nights.</span
+        ><span>Your entries stay in this browser. Back them up regularly.</span>
+      </footer>
+      <noscript
+        ><p class="error-banner">
+          Round Log needs JavaScript to save and display sessions.
+        </p></noscript
+      >
+    </main>
+    <dialog id="session-dialog" aria-labelledby="dialog-title">
+      <form id="session-form">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">A LITTLE BETTER THAN YESTERDAY</p>
+            <h2 id="dialog-title">Log the work.</h2>
+          </div>
+          <button
+            type="button"
+            class="icon-button"
+            id="close-dialog"
+            aria-label="Close session form"
+          >
+            ×
+          </button>
+        </div>
+        <p id="form-context" class="form-context"></p>
+        <input type="hidden" name="id" />
+        <div class="form-grid">
+          <label>Date<input name="date" type="date" required /></label
+          ><label>Discipline<select name="discipline" required></select></label
+          ><label
+            >Duration <span class="label-hint">minutes</span
+            ><input
+              name="minutes"
+              type="number"
+              min="1"
+              max="720"
+              step="1"
+              value="60"
+              required
+              inputmode="numeric" /></label
+          ><label
+            >Rounds completed<input
+              name="rounds"
+              type="number"
+              min="0"
+              max="100"
+              step="1"
+              value="0"
+              required
+              inputmode="numeric"
+          /></label>
+        </div>
+        <label id="format-field"
+          >Jiu-jitsu format<select name="format">
+            <option value="">Not specified</option>
+            <option value="Gi">Gi</option>
+            <option value="No-gi">No-gi</option>
+          </select></label
+        ><label class="effort-label"
+          >Session effort <span class="label-hint">1 = easy · 10 = maximum</span
+          ><select name="effort" required>
+            <option value="1">1 · Very easy</option>
+            <option value="2">2 · Easy</option>
+            <option value="3">3 · Light</option>
+            <option value="4">4 · Comfortable</option>
+            <option value="5">5 · Moderate</option>
+            <option value="6" selected>6 · Steady work</option>
+            <option value="7">7 · Hard</option>
+            <option value="8">8 · Very hard</option>
+            <option value="9">9 · Near maximum</option>
+            <option value="10">10 · Maximum</option>
+          </select></label
+        ><label
+          >Technique focus <span class="label-hint">optional</span
+          ><input
+            name="focus"
+            type="text"
+            maxlength="120"
+            placeholder="e.g. Guillotine entries from front headlock" /></label
+        ><label
+          >What did you learn? <span class="label-hint">optional</span
+          ><textarea
+            name="lesson"
+            rows="3"
+            maxlength="2000"
+            placeholder="One detail worth remembering…"
+          ></textarea></label
+        ><label
+          >Next time <span class="label-hint">optional</span
+          ><textarea
+            name="next"
+            rows="2"
+            maxlength="1000"
+            placeholder="One thing to work on in your next session…"
+          ></textarea>
+        </label>
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+        <div class="dialog-footer">
+          <button
+            type="button"
+            class="text-button danger"
+            id="delete-session"
+            hidden
+          >
+            Delete session
+          </button>
+          <div class="dialog-footer-actions">
+            <button type="button" class="button" id="cancel-dialog">
+              Cancel</button
+            ><button type="submit" class="button primary">Save session</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="confirm-dialog" aria-labelledby="confirm-title">
+      <div class="confirm-body">
+        <p class="eyebrow">CHECK BEFORE YOU CLEAR</p>
+        <h2 id="confirm-title">Delete this session?</h2>
+        <p id="confirm-description"></p>
+        <div class="dialog-footer-actions">
+          <button class="button" id="confirm-cancel">Keep session</button
+          ><button class="button primary" id="confirm-delete">
+            Delete session
+          </button>
+        </div>
+      </div>
+    </dialog>
+    <div
+      id="status"
+      class="toast"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></div>
+  </body>
+</html>
